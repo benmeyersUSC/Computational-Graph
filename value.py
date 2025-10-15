@@ -63,8 +63,7 @@ class Value:
         for node in reversed(topo):
             node._backward()
 
-
-    def parameters(self):
+    def params(self):
         """get leaf nodes in graph who are trainable...not products, but just internal values = leaves"""
         params = []
         visited = set()
@@ -81,6 +80,6 @@ class Value:
 
     def grad_step(self, lr=0.01):
         """subtract gradient * learning rate for each parameter"""
-        for param in self.parameters():
+        for param in self.params():
             param.data -= lr * param.grad
             param.grad = np.zeros_like(param.grad)

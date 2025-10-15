@@ -1,24 +1,26 @@
 from value import Value
 from vector import Vector
+from perceptron import MultiLayerPerceptron
 import numpy as np
 
 def main():
-    W = Vector(np.random.randn(3, 2), requires_grad=True)  
-    x = Vector(np.array([1, 2, 3]), requires_grad=False)    
-    
-    for i in range(50):        
-        z = x @ W
-        
-        loss = z @ z  # dot product gives scalar
-        
+    mlp = MultiLayerPerceptron(
+        input_shape=(1, 512),
+        layer_dims=[256, 128, 64, 32, 16, 8],
+        activations=['relu', 'relu', 'relu', 'relu', 'relu', 'sigmoid']
+    )
+    x = Vector(np.random.randn(512,))
+
+    for i in range(100):
+        output = mlp(x)
+
+        # will create graph and fill each Vector with its gradient
+        output.backward()
+
+        mlp.grad_step(lr=0.01)
+
         if i % 10 == 0:
-            print(f"Iteration {i}, Loss: {loss.data:.6f}, z: {z.data}")
-        
-        loss.backward()
-        loss.grad_step(lr=0.01)
-    
-    print(f"\nFinal z: {z.data}")
-    print(f"Final W:\n{W.data}")
+            print(f"Iteration {i}, Output sum: {output.data.sum()}")
 
 
 if __name__ == "__main__":
